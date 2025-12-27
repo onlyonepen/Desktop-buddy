@@ -10,6 +10,22 @@ public class SaveData : MonoBehaviour
     public static int CurrentSlot;
 
 
+    public static void Init()
+    {
+        if(!File.Exists(SavePath))
+        {
+            Debug.Log("No save found. Creating new save data.");
+            SaveCache = new SavedEventData();
+            SaveFile();
+        }
+        else
+        {
+            string json = File.ReadAllText(SavePath);
+            Debug.Log("Get saved file from: " + SavePath);
+            SaveCache = JsonUtility.FromJson<SavedEventData>(json);
+        }
+    }
+
     public static void SaveFile()
     {
         SaveEvent();
@@ -24,13 +40,12 @@ public class SaveData : MonoBehaviour
     {
         if (CurrentEvent == null) return;
 
-        SaveCache.EventDatas[CurrentSlot] = new EventData();
+        SaveCache.EventDatas[CurrentSlot] = CurrentEvent;
     }
 
-    [Button]
     public static EventData CreateEvent(EventData data, int slot)
     {
-        SaveCache.EventDatas[slot] = new EventData();
+        SaveCache.EventDatas.Insert(slot, data);
 
         CurrentSlot = slot;
         CurrentEvent = data;
@@ -40,12 +55,27 @@ public class SaveData : MonoBehaviour
         return CurrentEvent;
     }
 
-    [Button]
     public static void DeleteEvent(int slot)
     {
         SaveCache.EventDatas[slot] = new EventData();
         CurrentEvent = null;
         Debug.Log("Delete event: " + slot);
         SaveFile();
+    }
+
+    public static SavedEventData LoadSavedEvent()
+    {
+        if (!File.Exists(SavePath)) return null;
+
+        string json = File.ReadAllText(SavePath);
+        SavedEventData loadedData = JsonUtility.FromJson<SavedEventData>(json);
+        SaveCache = loadedData;
+
+        return loadedData;
+    }
+
+    public static void ClearAllEvent()
+    {
+        File.Delete(SavePath);
     }
 }

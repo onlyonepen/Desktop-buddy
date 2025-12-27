@@ -11,11 +11,11 @@ public class SavedEventData
 [Serializable]
 public class EventData
 {
-    String EventName;
-    Color EventColor;
-    Sprite EventImage;
-    Sprite EventIcon;
-    int EventStartTime;
-    int EventEndTime;
-    string EventDetail;
+    public String EventName;
+    public Color EventColor;
+    public Sprite EventImage;
+    public Sprite EventIcon;
+    public int EventStartTime;
+    public int EventEndTime;
+    public string EventDetail;
 }
