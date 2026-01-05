@@ -21,13 +21,13 @@ public class SaveTest : MonoBehaviour
     [Button]
     public void LoadSaveName(int slot)
     {
-        Debug.Log(SaveData.LoadSavedEvent().EventDatas[slot].EventName);
+        Debug.Log(SaveData.LoadSavedEvent().EventList[slot].EventName);
     }
 
     [Button]
     public void CheckSaveSize()
     {
-        Debug.Log(SaveData.LoadSavedEvent().EventDatas.Capacity);
+        Debug.Log(SaveData.LoadSavedEvent().EventList.Capacity);
     }
 
     [Button]

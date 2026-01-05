@@ -5,7 +5,7 @@ using VInspector;
 public class SaveData : MonoBehaviour
 {
     private static readonly string SavePath = Path.Combine(Application.persistentDataPath, "EventData.json");
-    public static SavedEventData SaveCache;
+    public static DailyLayer SaveCache;
     public static EventData CurrentEvent;
     public static int CurrentSlot;
 
@@ -15,14 +15,14 @@ public class SaveData : MonoBehaviour
         if(!File.Exists(SavePath))
         {
             Debug.Log("No save found. Creating new save data.");
-            SaveCache = new SavedEventData();
+            SaveCache = new DailyLayer();
             SaveFile();
         }
         else
         {
             string json = File.ReadAllText(SavePath);
             Debug.Log("Get saved file from: " + SavePath);
-            SaveCache = JsonUtility.FromJson<SavedEventData>(json);
+            SaveCache = JsonUtility.FromJson<DailyLayer>(json);
         }
     }
 
@@ -40,12 +40,12 @@ public class SaveData : MonoBehaviour
     {
         if (CurrentEvent == null) return;
 
-        SaveCache.EventDatas[CurrentSlot] = CurrentEvent;
+        SaveCache.EventList[CurrentSlot] = CurrentEvent;
     }
 
     public static EventData CreateEvent(EventData data, int slot)
     {
-        SaveCache.EventDatas.Insert(slot, data);
+        SaveCache.EventList.Insert(slot, data);
 
         CurrentSlot = slot;
         CurrentEvent = data;
@@ -57,18 +57,18 @@ public class SaveData : MonoBehaviour
 
     public static void DeleteEvent(int slot)
     {
-        SaveCache.EventDatas[slot] = new EventData();
+        SaveCache.EventList[slot] = new EventData();
         CurrentEvent = null;
         Debug.Log("Delete event: " + slot);
         SaveFile();
     }
 
-    public static SavedEventData LoadSavedEvent()
+    public static DailyLayer LoadSavedEvent()
     {
         if (!File.Exists(SavePath)) return null;
 
         string json = File.ReadAllText(SavePath);
-        SavedEventData loadedData = JsonUtility.FromJson<SavedEventData>(json);
+        DailyLayer loadedData = JsonUtility.FromJson<DailyLayer>(json);
         SaveCache = loadedData;
 
         return loadedData;
