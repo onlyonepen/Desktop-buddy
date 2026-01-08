@@ -6,14 +6,14 @@ using UnityEngine;
 [Serializable]
 public class DailyData
 {
-    public List<DailyLayer> EventList = new List<DailyLayer>();
+    public List<DailyLayer> LayerList = new List<DailyLayer>();
+    public int SelectedLayer = 0;
 }
 
 [Serializable]
 public class DailyLayer
 {
     public string LayerName;
-    public bool IsVisible;
     public List<EventData> EventList = new List<EventData>();
 }
 

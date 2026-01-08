@@ -3,36 +3,14 @@ using VInspector;
 
 public class SaveTest : MonoBehaviour
 {
-    [Button]
-    public void Init()
+    private void Awake()
     {
         SaveData.Init();
     }
 
     [Button]
-    public void CreateEvent(string name, int slot)
-    {
-        EventData newEvent = new EventData();
-        newEvent.EventName = name;
-
-        SaveData.CreateEvent(newEvent, slot);
-    }
-
-    [Button]
-    public void LoadSaveName(int slot)
-    {
-        Debug.Log(SaveData.LoadSavedEvent().EventList[slot].EventName);
-    }
-
-    [Button]
-    public void CheckSaveSize()
-    {
-        Debug.Log(SaveData.LoadSavedEvent().EventList.Capacity);
-    }
-
-    [Button]
     public void ClearAllSavedEvent()
     {
-        SaveData.ClearAllEvent();
+        SaveData.ClearAllData();
     }
 }

@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DailyPanelManager : MonoBehaviour
 {
     public GameObject EventPref;
+    public List<GameObject> EventLayerGameobjectList;
 
     public Canvas MainCanvas;
     public Transform EventTransform;
@@ -22,7 +24,29 @@ public class DailyPanelManager : MonoBehaviour
 
     public void Init()
     {
+        //create EventOBJ and LayerOBJ
+        foreach(DailyLayer layer in SaveData.DailyDataCache.LayerList)
+        {
+            GameObject newObj = new GameObject(layer.LayerName);
+            newObj.transform.parent = EventTransform;
+            EventLayerGameobjectList.Add(newObj);
 
+            foreach (EventData _event in layer.EventList)
+            {
+                GameObject tmp = LoadEvent(_event);
+                tmp.transform.parent = newObj.transform;
+            }
+        }
+
+        //Disable all Layer Except selected one
+        int i = 0;
+        for (i = 0; i < EventLayerGameobjectList.Count; i++)
+        {
+            if(i != SaveData.DailyDataCache.SelectedLayer)
+            {
+                EventLayerGameobjectList[i].SetActive(false);
+            }
+        }
     }
 
     public GameObject LoadEvent(EventData @event)
