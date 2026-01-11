@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,9 @@ public class DailyPanelManager : MonoBehaviour
     public Canvas MainCanvas;
     public Transform EventTransform;
 
+    public DailyTimelineHandController timelineHandController;
+    public TextMeshProUGUI TodayDateText;
+
     private void Start()
     {
         EventData newEvent = new EventData();
@@ -19,13 +23,16 @@ public class DailyPanelManager : MonoBehaviour
         newEvent.EventStartTime = new DateTime(2011, 6, 10, 6, 30, 16);
         newEvent.EventEndTime = new DateTime(2011, 6, 10, 20, 30, 16);
 
-        LoadEvent(newEvent);
+        LoadEventToGameobject(newEvent);
+        TodayDateText.text = DateTime.Today.ToString("dddd" + " " + "dd" + " " + "MMMM" + " " + "yyyy");
     }
 
     public void Init()
     {
+        TodayDateText.text = DateTime.Today.ToString("dddd" + " " + "dd" + " " + "MMMM" + " " + "yyyy");
+
         //create EventOBJ and LayerOBJ
-        foreach(DailyLayer layer in SaveData.DailyDataCache.LayerList)
+        foreach (DailyLayer layer in SaveData.DailyDataCache.LayerList)
         {
             GameObject newObj = new GameObject(layer.LayerName);
             newObj.transform.parent = EventTransform;
@@ -33,7 +40,7 @@ public class DailyPanelManager : MonoBehaviour
 
             foreach (EventData _event in layer.EventList)
             {
-                GameObject tmp = LoadEvent(_event);
+                GameObject tmp = LoadEventToGameobject(_event);
                 tmp.transform.parent = newObj.transform;
             }
         }
@@ -49,30 +56,30 @@ public class DailyPanelManager : MonoBehaviour
         }
     }
 
-    public GameObject LoadEvent(EventData @event)
+    public GameObject LoadEventToGameobject(EventData @event)
     {
         GameObject thisEvent = Instantiate(EventPref, EventTransform);
         DailyEventElement eventElement = thisEvent.GetComponent<DailyEventElement>();
-        GameObject pie = eventElement.Pie;
+        GameObject section = eventElement.Section;
         Image IconImage = eventElement.Icon.GetComponent<Image>();
 
         thisEvent.transform.localScale = Vector3.one;
          
-        Image _Image = pie.GetComponent<Image>();
+        Image _Image = section.GetComponent<Image>();
         Color _color = @event.EventColor;
         _color.a = 0.5f;
         _Image.color = _color;
 
         TimeSpan duration = @event.EventEndTime - @event.EventStartTime;
-        float _fillAmount = (((float)duration.TotalMinutes) / 720f) / 2;
-        _Image.fillAmount = _fillAmount;
+        float sectionWidth = (float)duration.TotalMinutes / 1440f * timelineHandController.timelineLength;
+        RectTransform eventWidth = section.GetComponent<RectTransform>();
+        eventWidth.sizeDelta = new Vector2(sectionWidth, eventWidth.sizeDelta.y);
 
         int startHr = @event.EventStartTime.Hour;
         int startMin = @event.EventStartTime.Minute;
-        float startAngle = ((startHr * 30) + (startMin * 0.5f)) / 2;
-        float IconAngle = (startAngle + (_fillAmount * 360 / 2));
-        pie.transform.Rotate(Vector3.forward * -startAngle);
-        eventElement.IconParent.Rotate(Vector3.forward * -IconAngle);
+        int startTotalMin = (startHr * 60) + startMin;
+        float sectionPos = startTotalMin / 1440f * timelineHandController.timelineLength + (sectionWidth / 2) - (timelineHandController.timelineLength / 2);
+        thisEvent.transform.localPosition = Vector2.right * sectionPos;
 
         //TODO: ApplyIcon
         //IconImage.sprite = @event.EventImage;
